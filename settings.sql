@@ -1,0 +1,2 @@
+DROP DATABASE IF EXISTS "whuritgo";
+CREATE DATABASE "whuritgo";
