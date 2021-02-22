@@ -9,3 +9,5 @@ curl "http://localhost:8000/sign-up/" \
       "password_confirmation": "'"${PASSWORD}"'"
     }
   }'
+
+echo

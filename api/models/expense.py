@@ -8,7 +8,7 @@ class Expense(models.Model):
   item = models.CharField(max_length=100)
   quantity = models.IntegerField()
   date = models.CharField(max_length=100)
-  cost = models.DecimalField(max_digits=None, decimal_places=2)
+  cost = models.FloatField()
   owner = models.ForeignKey(
       get_user_model(),
       on_delete=models.CASCADE
@@ -19,7 +19,7 @@ class Expense(models.Model):
     return self.item
 
   def as_dict(self):
-    """Returns dictionary version of Mango models"""
+    """Returns dictionary version of Expense models"""
     return {
         'id': self.id,
         'item': self.item,
