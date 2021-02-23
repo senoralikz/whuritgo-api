@@ -1,3 +1,4 @@
+import json
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
@@ -16,9 +17,6 @@ class Expenses(generics.ListCreateAPIView):
     serializer_class = ExpenseSerializer
     def get(self, request):
         """Index request"""
-        # Get all the mangos:
-        # mangos = Mango.objects.all()
-        # Filter the mangos by owner, so you can only see your owned mangos
         expense = Expense.objects.filter(owner=request.user.id)
         # Run the data through the serializer
         data = ExpenseSerializer(expense, many=True).data
@@ -26,13 +24,11 @@ class Expenses(generics.ListCreateAPIView):
 
     def post(self, request):
         """Create request"""
+        data = json.loads(request.body)
         # Add user to request data object
         request.data['expense']['owner'] = request.user.id
-        # Serialize/create mango
-        expense = ExpenseSerializer(data=request.data['expense'])
-        # If the mango data is valid according to our serializer...
+        expense = ExpenseSerializer(data=data['expense'])
         if expense.is_valid():
-            # Save the created mango & send a response
             expense.save()
             return Response({ 'expense': expense.data }, status=status.HTTP_201_CREATED)
         # If the data is not valid, return a response with the errors
@@ -42,9 +38,7 @@ class ExpenseDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes=(IsAuthenticated,)
     def get(self, request, pk):
         """Show request"""
-        # Locate the mango to show
         expense = get_object_or_404(Expense, pk=pk)
-        # Only want to show owned mangos?
         if not request.user.id == expense.owner.id:
             raise PermissionDenied('Unauthorized, you do not have this expense')
 
@@ -54,26 +48,18 @@ class ExpenseDetail(generics.RetrieveUpdateDestroyAPIView):
 
     def delete(self, request, pk):
         """Delete request"""
-        # Locate mango to delete
         expense = get_object_or_404(Expense, pk=pk)
-        # Check the mango's owner agains the user making this request
         if not request.user.id == expense.owner.id:
             raise PermissionDenied('Unauthorized, you do not have this expense')
-        # Only delete if the user owns the  mango
         expense.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def partial_update(self, request, pk):
         """Update Request"""
         # Remove owner from request object
-        # This "gets" the owner key on the data['mango'] dictionary
-        # and returns False if it doesn't find it. So, if it's found we
-        # remove it.
         if request.data['expense'].get('owner', False):
             del request.data['expense']['owner']
 
-        # Locate Mango
-        # get_object_or_404 returns a object representation of our Mango
         expense = get_object_or_404(Expense, pk=pk)
         # Check if user is the same as the request.user.id
         if not request.user.id == expense.owner.id:
