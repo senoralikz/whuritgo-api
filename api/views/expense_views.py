@@ -82,7 +82,7 @@ class ExpenseDetail(generics.RetrieveUpdateDestroyAPIView):
         # Add owner to data object now that we know this user owns the resource
         request.data['expense']['owner'] = request.user.id
         # Validate updates with serializer
-        data = ExpenseSerializer(expense, data=request.data['expense'])
+        data = ExpenseSerializer(expense, data=request.data['expense'], partial=True, read_only=True)
         if data.is_valid():
             # Save & send a 204 no content
             data.save()
