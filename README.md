@@ -1,7 +1,7 @@
 # whuritgo-api
 
 ### Description
-whuritgo helps you keep track of your expenses. Enter your purchase information and itll keep this history of everything you purchased.
+whuritgo helps you keep track of your expenses. Enter your purchase information and it will keep this history of everything you purchased.
 
 ### Technologies Used
 - Python
