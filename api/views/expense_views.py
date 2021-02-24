@@ -26,7 +26,7 @@ class Expenses(generics.ListCreateAPIView):
         """Create request"""
         data = json.loads(request.body)
         # Add user to request data object
-        request.data['expense']['owner'] = request.user.id
+        data['expense']['owner'] = request.user.id
         expense = ExpenseSerializer(data=data['expense'])
         if expense.is_valid():
             expense.save()
