@@ -56,9 +56,10 @@ class ExpenseDetail(generics.RetrieveUpdateDestroyAPIView):
 
     def partial_update(self, request, pk):
         """Update Request"""
+        data = json.loads(request.body)
         # Remove owner from request object
-        if request.data['expense'].get('owner', False):
-            del request.data['expense']['owner']
+        if data['expense'].get('owner', False):
+            del data['expense']['owner']
 
         expense = get_object_or_404(Expense, pk=pk)
         # Check if user is the same as the request.user.id
@@ -66,9 +67,9 @@ class ExpenseDetail(generics.RetrieveUpdateDestroyAPIView):
             raise PermissionDenied('Unauthorized, you do not have this expense')
 
         # Add owner to data object now that we know this user owns the resource
-        request.data['expense']['owner'] = request.user.id
+        data['expense']['owner'] = request.user.id
         # Validate updates with serializer
-        data = ExpenseSerializer(expense, data=request.data['expense'], partial=True, read_only=True)
+        data = ExpenseSerializer(expense, data=data['expense'], partial=True)
         if data.is_valid():
             # Save & send a 204 no content
             data.save()
